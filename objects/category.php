@@ -33,4 +33,24 @@ class Category
 
         return $stmt;
     }
+
+    // получение названия категории по её ID
+    function readName()
+    {
+        // запрос MySQL
+        $query = "SELECT name FROM " . $this->table_name . " WHERE id = ?"; // скрываем параметр запроса
+
+        $stmt = $this->conn->prepare($query);
+
+
+        $stmt->bindParam(1, $this->id); //биндим плейсхолдер
+
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $this->name = $row["name"]; //присваиваем свойству name новое значение
+    }
+
+
 }

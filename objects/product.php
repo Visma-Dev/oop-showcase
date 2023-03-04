@@ -47,4 +47,21 @@ class Product
             return false;
         }
     }
+
+    // метод для получения товаров
+    function readAll()
+    {
+        // запрос MySQL
+        $query = "SELECT
+                id, name, description, price, category_id
+            FROM
+                " . $this->table_name . "
+            ORDER BY
+                modified DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt;
+    }
 }
