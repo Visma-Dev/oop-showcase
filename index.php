@@ -1,10 +1,5 @@
 <?php
 
-// включаем соединение с БД и файлы с объектами
-include_once "config/database.php";
-include_once "objects/product.php";
-include_once "objects/category.php";
-
 // установка заголовка страницы
 $page_title = "Витрина со всеми товарами на любой вкус";
 
@@ -17,6 +12,21 @@ require_once "layout/header.php";
 
 <?php
 
+// включаем соединение с БД и файлы с объектами
+include_once "config/database.php";
+include_once "objects/product.php";
+include_once "objects/category.php";
+
+
+// страница, указанная в параметре URL, страница по умолчанию - 1
+$page = isset($_GET["page"]) ? $_GET["page"] : 1;
+
+// устанавливаем ограничение количества записей на странице
+$products_per_page = 5;
+
+// подсчитываем лимит запроса
+$offset = ($products_per_page * $page) - $products_per_page;
+
 // создаём экземпляры классов БД и объектов
 $database = new Database();
 $db = $database->getConnection();
@@ -24,8 +34,9 @@ $db = $database->getConnection();
 $product = new Product($db);
 $category = new Category($db);
 
+
 // запрос товаров
-$stmt = $product->readAll();
+$stmt = $product->readAll($offset, $products_per_page); //пробрасываем в метод запроса товаров, параметры необходимые для пагинации
 $num = $stmt->rowCount(); //возвращает кол-во строк затронутых последним запросом
 
 // отображаем товары, если они есть
@@ -84,7 +95,14 @@ if ($num > 0) {
     }
     echo "</table>";
 
-    // здесь будет пагинация
+    // страница, на которой используется пагинация
+    $page_url = "index.php?";
+
+    // подсчёт всех товаров в бд, для вычисления количества страниц
+    $total_rows = $product->countAll();
+
+    // пагинация
+    include_once "paging.php";
 }
 
 // сообщим пользователю, если товаров нет

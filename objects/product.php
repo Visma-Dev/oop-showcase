@@ -49,7 +49,7 @@ class Product
     }
 
     // метод для получения товаров
-    function readAll()
+    function readAll($offset, $products_per_page)
     {
         // запрос MySQL
         $query = "SELECT
@@ -57,11 +57,27 @@ class Product
             FROM
                 " . $this->table_name . "
             ORDER BY
-                modified DESC";
+                modified DESC
+            LIMIT
+                {$offset}, {$products_per_page}";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
         return $stmt;
+    }
+
+    // используется для пагинации товаров
+    public function countAll()
+    {
+        // запрос MySQL
+        $query = "SELECT id FROM " . $this->table_name . "";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        $num = $stmt->rowCount();
+
+        return $num;
     }
 }
