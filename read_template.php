@@ -1,17 +1,24 @@
 <?php
 
+// форма поиска
+echo "<form role='search' action='search.php'>";
+echo "<div class='input-group col-md-3 pull-left margin-right-1em'>";
+
+$search_value = isset($search_term) ? "value='{$search_term}'" : "";
+
+echo "<input type='text' class='form-control' placeholder='Введите название или описание продукта ...' name='s' required {$search_value} />";
+echo "<div class='input-group-btn'>";
+echo "<button class='btn btn-primary' type='submit'><i class='glyphicon glyphicon-search'></i></button>";
+echo "</div>";
+echo "</div>";
+echo "</form>";
+
 // кнопка создания товара
 echo "<div class='right-button-margin'>";
 echo "<a href='CRUD/create_product.php' class='btn btn-primary pull-right'>";
 echo "<span class='glyphicon glyphicon-plus'></span> Создать товар";
 echo "</a>";
 echo "</div>";
-
-// получение товаров
-$stmt = $product->readAll($offset, $products_per_page);
-
-// подсчёт общего количества строк (используется для разбивки на страницы)
-$total_rows = $product->countAll();
 
 // показываем товары, если они есть
 if ($total_rows > 0) {

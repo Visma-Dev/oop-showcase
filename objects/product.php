@@ -153,6 +153,66 @@ class Product
             return false;
         }
     }
+
+
+    // Выбираем товары по поисковому запросу
+    // Параметры запроса скрываем плейсхолдерами, т.к. вывод будет на основе данных от юзера
+    public function search($search_term, $offset, $products_per_page)
+    {
+        // запрос MySQL
+        // запрос MySQL
+        $query = "
+        SELECT
+            id, name, description, price, category_id
+        FROM
+            " . $this->table_name . "
+        WHERE
+            name LIKE ? OR description LIKE ?
+        ORDER BY
+            modified DESC
+        LIMIT
+            {$offset}, {$products_per_page}";
+
+        // подготавливаем запрос
+        $stmt = $this->conn->prepare($query);
+
+        // привязываем значения переменных
+        $search_term = "%{$search_term}%";
+        $stmt->bindParam(1, $search_term);
+        $stmt->bindParam(2, $search_term);
+
+        // выполняем запрос
+        $stmt->execute();
+
+        // возвращаем значения из БД
+        return $stmt;
+    }
+
+    // метод для подсчёта общего количества строк запроса
+    public function countSearch($search_term)
+    {
+        // запрос
+        $query = "SELECT
+            COUNT(*) as total_rows
+        FROM
+            " . $this->table_name . " 
+        WHERE
+            name LIKE ? OR description LIKE ?";
+
+        // подготовка запроса
+        $stmt = $this->conn->prepare($query);
+
+        // привязка значений
+        $search_term = "%{$search_term}%";
+        $stmt->bindParam(1, $search_term);
+        $stmt->bindParam(2, $search_term);
+
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row["total_rows"];
+    }
+
 }
 
 

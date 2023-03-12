@@ -16,21 +16,20 @@ $db = $database->getConnection();
 $product = new Product($db);
 $category = new Category($db);
 
+// получение поискового запроса
+$search_term = isset($_GET["s"]) ? $_GET["s"] : "";
 
-// получение товаров
-$stmt = $product->readAll($offset, $products_per_page);
+$page_title = "Вы искали \"{$search_term}\"";
+require_once "layout/header.php";
 
-// подсчёт общего количества строк (используется для разбивки на страницы)
-$total_rows = $product->countAll();
+// запрос товаров
+$stmt = $product->search($search_term, $offset, $products_per_page);
 
-//заголовок страницы
-$page_title = "Список товаров";
+// подсчитываем общее количество строк - используется для разбивки на страницы
+$total_rows = $product->countSearch($search_term);
 
-//головка
-include_once "layout/header.php";
-
-// шаблон каталога товаров (почти blade)
+// шаблон для отображения списка товаров
 include_once "read_template.php";
 
 // содержит наш JavaScript и закрывающие теги html
-include_once "layout/footer.php";
+require_once "layout/footer.php";
