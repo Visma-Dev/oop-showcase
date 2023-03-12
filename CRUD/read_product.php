@@ -4,9 +4,9 @@
 $id = isset($_GET["id"]) ? $_GET["id"] : die("ERROR: отсутствует ID.");
 
 // подключаем файлы для работы с базой данных и файлы с объектами
-include_once "config/database.php";
-include_once "objects/product.php";
-include_once "objects/category.php";
+include_once "../config/database.php";
+include_once "../objects/product.php";
+include_once "../objects/category.php";
 
 // получаем соединение с базой данных
 $database = new Database();
@@ -26,12 +26,12 @@ $product->readOne();
 // установка заголовка страницы
 $page_title = $product->name;
 
-require_once "layout/header.php";
+require_once "../layout/header.php";
 ?>
 
     <!-- ссылка на все товары -->
     <div class="right-button-margin">
-        <a href="index.php" class="btn btn-primary pull-right">
+        <a href="../index.php" class="btn btn-primary pull-right">
             <span class="glyphicon glyphicon-list"></span> Просмотр всех товаров
         </a>
     </div>
@@ -64,4 +64,4 @@ require_once "layout/header.php";
     </table>
 
 <?php // подвал
-require_once "layout/footer.php";
+require_once "../layout/footer.php";

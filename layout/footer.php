@@ -31,7 +31,7 @@
             },
             callback: function(result) {
                 if (result === true) {
-                    $.post("delete_product.php", {
+                    $.post("CRUD/delete_product.php", {
                         object_id: id // передаем id товара через POST
                     }, function(data) {
                         location.reload();

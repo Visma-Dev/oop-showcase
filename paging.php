@@ -2,6 +2,9 @@
 
 echo "<ul class='pagination'>";
 
+// укажем страницу, на которой используется пагинация
+$page_url = "index.php?";
+
 // ссылка для первой страницы
 if ($page > 1) {
     echo "<li><a href='{$page_url}' title='Переход к первой странице'>";

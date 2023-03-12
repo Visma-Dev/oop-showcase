@@ -1,9 +1,9 @@
 <?php
 
 // включим файлы, необходимые для подключения к бд и файлы с объектами
-include_once "config/database.php";
-include_once "objects/product.php";
-include_once "objects/category.php";
+include_once "../config/database.php";
+include_once "../objects/product.php";
+include_once "../objects/category.php";
 
 // создаем экземпляр класса бд и образ подключения
 $database = new Database();
@@ -18,11 +18,11 @@ $category = new Category($db);
 $page_title = "Выгружаем и выкладываем товар на витрину";
 
 
-require_once "layout/header.php";
+require_once "../layout/header.php";
 ?>
 
     <div class="right-button-margin">
-        <a href="index.php" class="btn btn-default pull-right">Просмотр всех товаров</a>
+        <a href="../index.php" class="btn btn-default pull-right">Просмотр всех товаров</a>
     </div>
 
     <!-- форма для создания товара -->
@@ -101,5 +101,5 @@ if ($_POST)
 ?>
 
 <?php // подвал
-require_once "layout/footer.php";
+require_once "../layout/footer.php";
 ?>

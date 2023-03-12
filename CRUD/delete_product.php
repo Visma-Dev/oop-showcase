@@ -4,8 +4,8 @@
 if ($_POST) {
 
     // подключаем файлы для работы с базой данных и файлы с объектами
-    include_once "config/database.php";
-    include_once "objects/product.php";
+    include_once "../config/database.php";
+    include_once "../objects/product.php";
 
     // получаем соединение с бд
     $database = new Database();
