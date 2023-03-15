@@ -26,7 +26,11 @@ require_once "../layout/header.php";
     </div>
 
     <!-- форма для создания товара -->
-    <form action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
+    <form
+            action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>"
+            method="post"
+            enctype="multipart/form-data"
+    >
 
         <table class="table table-hover table-responsive table-bordered">
 
@@ -67,6 +71,11 @@ require_once "../layout/header.php";
             </tr>
 
             <tr>
+                <td>Изображение</td>
+                <td><input type="file" name="image" /></td>
+            </tr>
+
+            <tr>
                 <td></td>
                 <td>
                     <button type="submit" class="btn btn-primary">Добавить!</button>
@@ -87,10 +96,17 @@ if ($_POST)
     $product->price = $_POST["price"];
     $product->description = $_POST["description"];
     $product->category_id = $_POST["category_id"];
+    $image = !empty($_FILES["image"]["name"])
+        //уникализируем название изображения с помощью временной метки
+        ? time() . "_" .$_FILES["image"]["name"] : "";
+    $product->image = $image;
 
     // применяем ранее созданный метод, для создания товара
     if ($product->create()) {
         echo '<div class="alert alert-success">Товар был успешно создан.</div>';
+        // пытаемся загрузить отправленный файл
+        // метод uploadPhoto() вернет сообщение об ошибке, в случае неудачи валидации
+        echo $product->uploadPhoto();
     }
 
     // если не удается создать товар, сообщим об этом пользователю

@@ -12,6 +12,7 @@ class Product
     public $description;
     public $price;
     public $category_id;
+    public $image;
     public $timestamp;
 
     // в конструкторе принимаем значение метода Database->getConnection()
@@ -25,7 +26,7 @@ class Product
     {
         // Запрос для добавления записей в таблицу products.
         // Вместо значений подставляем именные плейсхолдеры, тем самым отделяя синтаксис запроса от значений параметров - защищаемся от инъекций.
-        $query = "INSERT INTO " . $this->table_name . " SET name=:name, price=:price, description=:description, category_id=:category_id, created=:created";
+        $query = "INSERT INTO " . $this->table_name . " SET name=:name, price=:price, description=:description, category_id=:category_id, image=:image, created=:created";
 
         //подготавливаем запрос
         $stmt = $this->conn->prepare($query);
@@ -38,6 +39,7 @@ class Product
         $stmt->bindParam(":price", $this->price);
         $stmt->bindParam(":description", $this->description);
         $stmt->bindParam(":category_id", $this->category_id);
+        $stmt->bindParam(":image", $this->image);
         $stmt->bindParam(":created", $this->timestamp);
 
         //выполняем запрос
@@ -86,7 +88,7 @@ class Product
     {
         // запрос MySQL
         $query = "SELECT
-                name, price, description, category_id
+                name, price, description, category_id, image
             FROM
                 " . $this->table_name . "
             WHERE
@@ -104,6 +106,7 @@ class Product
         $this->price = $row["price"];
         $this->description = $row["description"];
         $this->category_id = $row["category_id"];
+        $this->image = $row["image"];
     }
 
     // метод для обновления товара
@@ -116,7 +119,8 @@ class Product
                 name = :name,
                 price = :price,
                 description = :description,
-                category_id  = :category_id
+                category_id  = :category_id,
+                image = :image
             WHERE
                 id = :id";
 
@@ -128,6 +132,7 @@ class Product
         $stmt->bindParam(":price", $this->price);
         $stmt->bindParam(":description", $this->description);
         $stmt->bindParam(":category_id", $this->category_id);
+        $stmt->bindParam(":image", $this->image);
         $stmt->bindParam(":id", $this->id);
 
         // выполняем запрос
@@ -211,6 +216,82 @@ class Product
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $row["total_rows"];
+    }
+
+    // загрузка изображения на сервер
+    function uploadPhoto()
+    {
+        $result_message = "";
+
+        // если свойству присвоили значение:
+        if ($this->image) {
+
+            // определяем директорию, путь и тип файла
+            $target_directory = "uploads/";
+            $target_file = $target_directory . $this->image;
+            $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
+
+            //переменная для списка ошибок
+            $file_upload_error_messages = "";
+
+            // Проверяем файл, через функцию работы с изображениями. Если там будет не изображение - вернет false.
+            $check = getimagesize($_FILES["image"]["tmp_name"]);
+
+            if ($check !== false){} //если проверка пройдена - отправленный файл является изображением
+            // если нет - заносим первую ошибочку в нашу переменную
+            else { $file_upload_error_messages .= "<div>Отправленный файл не является изображением.</div>";}
+
+
+            // Устанавливаем разрешенные типы файлов
+            $allowed_file_types = array("jpg", "jpeg", "png", "gif");
+
+            // если перед функцией стоит "!", - тело условия выполнится, в случае если функция вернёт false.
+            if (!in_array($file_type, $allowed_file_types)) { //проверяем через функцию поиска значения в массивах
+                $file_upload_error_messages .= "<div>Разрешены только файлы JPG, JPEG, PNG, GIF.</div>";
+            }
+
+            // убедимся, что отправленный файл не слишком большой (не может быть больше 1 МБ)
+            if ($_FILES["image"]["size"] > (1024000)) {
+                $file_upload_error_messages .= "<div>Размер изображения не должен превышать 1 МБ.</div>";
+            }
+
+
+            // убедимся, что папка uploads существует, если нет, то создаём
+            if (!is_dir($target_directory)) {
+                mkdir($target_directory, 0777, true); //аргумент permissions игнорируется в Windows.
+            }
+
+
+            //!! если $file_upload_error_messages всё ещё пуст - значит все проверки валидации пройдены.
+            if (empty($file_upload_error_messages)) {
+
+                // раз ошибок нет - попробуем загрузить файл
+                if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file))
+
+                {} // фото успешно загружено
+
+                // ну а если нет:
+                else {
+                    // расскажем об этом пользователю, и лишь разведем руками
+                    $result_message .= "<div class='alert alert-danger'>";
+                    $result_message .= "<div>Невозможно загрузить фото.</div>";
+                    $result_message .= "<div>Обновите запись, чтобы загрузить фото снова.</div>";
+                    $result_message .= "</div>";
+                }
+            }
+
+            // если $file_upload_error_messages все таки содержит какие-либо ошибки:
+            else {
+
+                // покажем их пользователю
+                $result_message .= "<div class='alert alert-danger'>";
+                $result_message .= "{$file_upload_error_messages}";
+                $result_message .= "<div>Обновите запись, чтобы загрузить фото.</div>";
+                $result_message .= "</div>";
+            }
+        }
+
+        return $result_message;
     }
 
 }

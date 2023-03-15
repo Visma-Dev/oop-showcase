@@ -61,6 +61,12 @@ require_once "../layout/header.php";
                 ?>
             </td>
         </tr>
+        <tr>
+            <td>Изображение</td>
+            <td>
+                <?= $product->image ? "<img src='uploads/{$product->image}' style='width:300px;' />" : "Изображение не найдено."; ?>
+            </td>
+        </tr>
     </table>
 
 <?php // подвал
